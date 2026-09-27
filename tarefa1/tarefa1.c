@@ -26,7 +26,7 @@ void multiplica_colunas(int N, double A[N][N], double X[N], double Y[N]) {
 }
 
 int main() {
-    int N = 2000; // Tamanho da matriz
+    int N = 100; // Tamanho da matriz
 
     // Alocação das matrizes/vetores
     double (*A)[N] = malloc(sizeof(double[N][N]));
@@ -54,7 +54,7 @@ int main() {
     double tempo_colunas = (double)(fim - inicio) / CLOCKS_PER_SEC;
 
     // Exibição dos Resultados
-    printf("--- Teste com N = %d ---\n", N);
+    printf("Tamanho da Matrix = %d x %d\n", N, N);
     printf("Tempo por Linhas : %f segundos\n", tempo_linhas);
     printf("Tempo por Colunas: %f segundos\n", tempo_colunas);
 
