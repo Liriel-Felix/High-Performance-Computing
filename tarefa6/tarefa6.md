@@ -5,6 +5,7 @@
 Implemente diferentes versões de um programa para o cálculo de integrais definidas utilizando o método do trapézio. O programa deve permitir calcular numericamente a integral de uma função $f(x)$ em um intervalo $[a,b]$, utilizando $n$ subdivisões.
 
 Devem ser implementadas as seguintes versões:
+
 * Sequencial
 * Paralela sem tratamento para região crítica
 * Paralela utilizando critical
@@ -14,6 +15,7 @@ Devem ser implementadas as seguintes versões:
 Após a implementação, compare os resultados obtidos e os tempos médios de execução de cada versão à medida que o número de subdivisões ($n$) aumenta, utilizando gráficos/tabelas, para apresentar e analisar os resultados.
 
 Para cada experimento, discuta:
+
 1. A corretude dos resultados obtidos;
 2. As diferenças entre os resultados das versões sequencial e paralelas;
 3. O impacto da ausência de sincronização sobre o resultado;
@@ -142,7 +144,7 @@ int main() {
 | **2. Sem Tratamento** | **Incorreto** ($105,25$ / $51,84$ / $53,90$) | 0,004363 s | 0,016705 s | 0,036033 s |
 | **3. Com Critical** | **Correto** ($333,333333$) | 1,307243 s | 3,786522 s | 6,557846 s |
 | **4. Com Atomic** | **Correto** ($333,333333$) | 0,206535 s | 0,904978 s | 1,809059 s |
-| **5. Com Reduction** | **Correto** ($333,333333$) | **0,001025 s** | **0,004907 s** | **0,009932 s** |
+| **5. Com Reduction** | **Correto** ($333,333333$) | 0,001025 s | 0,004907 s | 0,009932 s |
 
 ### 5.2. Discussão dos Experimentos com os Dados Reais
 
@@ -157,6 +159,7 @@ int main() {
 
 #### 4. Impacto do Aumento de Subdivisões ($n$)
 À medida que $n$ cresce de $1M$ para $10M$:
+
 * Nas versões com `critical` e `atomic`, a sobrecarga de sincronização escala linearmente com o número de iterações, gerando um custo proibitivo para matrizes/vetores grandes.
 * Na versão com `reduction`, o aumento das iterações é absorvido com alta eficiência por todos os núcleos da CPU, mantendo a aceleração constante.
 
