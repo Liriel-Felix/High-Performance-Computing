@@ -144,18 +144,27 @@ int main() {
 | **2. Sem Tratamento** | **Incorreto** ($105,25$ / $51,84$ / $53,90$) | 0,004363 s | 0,016705 s | 0,036033 s |
 | **3. Com Critical** | **Correto** ($333,333333$) | 1,307243 s | 3,786522 s | 6,557846 s |
 | **4. Com Atomic** | **Correto** ($333,333333$) | 0,206535 s | 0,904978 s | 1,809059 s |
-| **5. Com Reduction** | **Correto** ($333,333333$) | 0,001025 s | 0,004907 s | 0,009932 s |
+| **5. Com Reduction** | **Correto** ($333,333333$) | **0,001025 s** | **0,004907 s** | **0,009932 s** |
 
-### 5.2. Discussão dos Experimentos com os Dados Reais
+### 5.2. Representação Gráfica dos Resultados
+
+![Comparativo de Desempenho dos Mecanismos de Sincronização](grafico_tarefa6.png)
+
+### 5.3. Discussão dos Experimentos com os Dados Reais
 
 #### 1 e 2. Corretude dos Resultados e Ausência de Sincronização
 * As versões **Sequencial**, **Critical**, **Atomic** e **Reduction** obtiveram o resultado matematicamente exato da integral ($\int_{0}^{10} x^2 \, dx = 333,333333$).
-* A versão **Sem Tratamento** resultou em valores completamente incorretos (ex: $105,25$ para $n=1M$ e $53,90$ para $n=10M$). A ausência de proteção no comando `soma += f(...)` gerou uma **Condição de Corrida (Race Condition)** crítica, fazendo com que milhares de atualizações de memória fossem sobrepostas e perdidas no hardware.
+* A versão **Sem Tratamento** resultou em valores completamente incorretos. A ausência de proteção no comando `soma += f(...)` gerou uma **Condição de Corrida (Race Condition)** crítica, fazendo com que milhares de atualizações de memória fossem sobrepostas e perdidas no hardware.
 
 #### 3. Comparativo de Desempenho entre Critical, Atomic e Reduction
-* **`critical` (O mais lento - Desempenho Degradado):** A instrução `#pragma omp critical` cria um *lock* por software a cada iteração do laço. Para $n = 10.000.000$, o tempo disparou para **6,557846 s** — ficando **mais de 114 vezes mais lento do que o código sequencial** devido à gargalo de **Contenção de Trava (*Lock Contention*)**.
+* **`critical` (O mais lento):** A instrução `#pragma omp critical` cria um *lock* por software a cada iteração do laço. Para $n = 10.000.000$, o tempo disparou para **6,557846 s** — ficando **mais de 114 vezes mais lento do que o código sequencial** devido à **Contenção de Trava (*Lock Contention*)**.
 * **`atomic` (Melhoria de Hardware):** A instrução `#pragma omp atomic` reduziu o tempo para $n = 10M$ de $6,55\text{ s}$ para **1,809059 s** (uma melhoria de ~3,6x em relação ao `critical`). Por utilizar instruções de montador nativas da CPU, elimina o *overhead* de software, mas continua limitado pelo gargalo de centenas de milhares de threads disputando a mesma posição de memória RAM.
 * **`reduction` (A Solução Ideal):** A cláusula `reduction(+:soma)` apresentou o menor tempo em todas as baterias. Para $n = 10.000.000$, o tempo caiu de $0,057081\text{ s}$ (sequencial) para **0,009932 s**, alcançando um **Speedup real de ~5,75x**. Como cada thread acumula os dados em um registrador/Cache privado, a contenção de memória foi completamente eliminada.
+
+#### 4. Impacto do Aumento de Subdivisões ($n$)
+À medida que $n$ cresce de $1M$ para $10M$:
+* Nas versões com `critical` e `atomic`, a sobrecarga de sincronização escala linearmente com o número de iterações.
+* Na versão com `reduction`, o aumento das iterações é absorvido com alta eficiência por todos os núcleos da CPU, mantendo a aceleração constante.
 
 #### 4. Impacto do Aumento de Subdivisões ($n$)
 À medida que $n$ cresce de $1M$ para $10M$:
